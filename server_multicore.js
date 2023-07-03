@@ -1,4 +1,5 @@
 const http = require('http');
+const process = require('process');
 //import cluster from 'node:cluster';
 const trigger_shim_addr = "192.168.1.3"
 //import cluster from 'node:cluster';
@@ -12,7 +13,7 @@ var request = require('request');
 var action_data_templates = fs.readFileSync("./action_data.json", "utf-8");
 
 function execute_rule(trigger_data, action_data_arr) {
-	const rule_fn = require('./rule.js');
+	const rule_fn = require('./applets/applet_beDBMT52.json.ts');
 	return rule_fn(trigger_data, action_data_arr);		
 }
 
@@ -20,14 +21,14 @@ function format_action_data(trigger_data, action_data_templates) {
 	return action_data_templates; 
 }
 
-function send_action_data(i, action_data) {
+async function send_action_data(i, action_data) {
         //console.log(action_data);
         //TODO: Impl this
         //console.log("sent action data");
         var options = {
-                uri: "http://192.168.1.3:7778/action_data_plain/",
+                uri: "http://node0.spigot1.cs799-serverless-pg0.wisc.cloudlab.us/action_data_plain/",
                 path: '/action_data_plain/',
-                port: '7778',
+                port: '80',
                 method: 'POST',
                 json: true,
                 body: {
@@ -48,9 +49,9 @@ function send_action_data(i, action_data) {
 
 function request_trigger_data(req) {
 	var options = {
-		uri: "http://192.168.1.3:7777/event_data/",
+		uri: "http://node1.spigot1.cs799-serverless-pg0.wisc.cloudlab.us/event_data/",
   		path: '/event_data/',
-                port: '7777',
+                port: '80',
   		method: 'POST',
 		json: true,
 		body: {
@@ -92,9 +93,9 @@ function trigger_notif_handler(req, res) {
 	//	}
 	//}
 	var options = {
-                uri: "http://192.168.1.3:7777/event_data/",
+		uri: "http://node1.spigot1.cs799-serverless-pg0.wisc.cloudlab.us/event_data/",
                 path: '/event_data/',
-                port: '7777',
+                port: '80',
                 method: 'POST',
                 json: true,
                 body: {
@@ -121,7 +122,7 @@ function trigger_notif_handler(req, res) {
                         	}
                 	}
 			res.writeHead(200);
-			res.end("Finished sending to action services");
+			res.end("success");
 		} else {
 			console.log(error);
 		}
@@ -131,6 +132,7 @@ function trigger_notif_handler(req, res) {
 }
 
 function isTriggerNotification(req) {
+	console.log("got request")
 	return req.method === 'POST'
 }
 
@@ -158,9 +160,20 @@ if (cluster.isMaster) {
 } else {
   // Workers can share any TCP connection
   // In this case it is an HTTP server
-  http.createServer(requestListener).listen(8080);
+  http.createServer(requestListener).listen(80);
 
   console.log(`Worker ${process.pid} started`);
+  const memoryData = process.memoryUsage();
+
+  const memoryUsage = {
+		  rss: `${memoryData.rss} -> Resident Set Size - total memory allocated for the process execution`,
+		  heapTotal: `${memoryData.heapTotal} -> total size of the allocated heap`,
+		  heapUsed: `${memoryData.heapUsed} -> actual memory used during the execution`,
+		  external: `${memoryData.external} -> V8 external memory`,
+	};
+
+	console.log(memoryUsage);
+
 }
 
 //const server = http.createServer(requestListener);

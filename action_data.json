@@ -1,2 +1,2 @@
 [{
-	"GoogleCalendar": { "EndTime": "" }}]
+	"GoogleCalendar": { "EndTime": "", "anyEventEnds": {"Title": "Holidays away" }}, "Twitter": {"Tweet": "default tweet"}}]
