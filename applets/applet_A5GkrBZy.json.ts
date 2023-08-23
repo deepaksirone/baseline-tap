@@ -2,10 +2,10 @@ module.exports = function(trigger_data_json, action_data_arr) {
 
 	var skip_vector = [0];
 	var action_data = JSON.parse(action_data_arr);
-	var Feed = JSON.parse(trigger_data_json).Feed;
+	var Feed = JSON.parse(trigger_data_json);
 	console.log(trigger_data_json)
 
-	var Texto = Feed.newFeedItem.EntryTitle;
+	var Texto = Feed.EventTitle;
 	var rss = " ";
 	rss= rss.concat(Texto);
 	var num = 6.0;

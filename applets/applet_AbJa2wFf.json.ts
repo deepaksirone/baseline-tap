@@ -4,8 +4,8 @@ module.exports = function(trigger_data_json, action_data_arr) {
 	var action_data = JSON.parse(action_data_arr);
 	console.log(trigger_data_json)
 
-	var Netro = JSON.parse(trigger_data_json).Netro;
-	if (parseInt(Netro.sensorData.Moisture) < 70) {
+	var Netro = JSON.parse(trigger_data_json).Moisture;
+	if (parseInt(Netro) < 70) {
 		  skip_vector[0] = 0;
 	}
 
